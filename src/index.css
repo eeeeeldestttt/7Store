@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* small helper */
+.glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(6px);
+}
