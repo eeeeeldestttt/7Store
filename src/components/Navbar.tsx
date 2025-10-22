@@ -59,11 +59,12 @@ export default function Navbar() {
               className="flex items-center space-x-3 cursor-pointer select-none hover:scale-105 transition-transform"
             >
               {/* ✅ gunakan src tanpa 'public/' */}
-              <img
-                src="/assets/images/logo7store.png"
-                alt="7Store Logo"
-                className="w-14 h-14 rounded-lg object-cover shadow-md"
-              />
+             <img
+  src="/assets/images/logo7store.png"
+  alt="7Store Logo"
+  className="w-16 h-16 object-contain p-1 rounded-lg bg-slate-800 shadow-md"
+/>
+
               <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 drop-shadow-md">
                 7Store
               </h1>
