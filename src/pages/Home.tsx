@@ -94,16 +94,7 @@ export default function Home() {
       </div>
 
       {/* === Deskripsi utama === */}
-      <section className="mb-12 text-center">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-emerald-300 to-green-300 bg-clip-text text-transparent">
-          Selamat Datang di #7Store
-        </h1>
-        <p className="text-slate-300 text-lg max-w-2xl mx-auto leading-relaxed">
-          Platform top-up game terpercaya dengan proses cepat dan aman. 
-          Pilih game favorit Anda dan mulai pengalaman gaming yang lebih seru!
-        </p>
-      </section>
-
+     
       {/* === Topup Paling Populer === */}
       <section className="mb-12">
         <div className="flex items-center justify-between mb-6">
