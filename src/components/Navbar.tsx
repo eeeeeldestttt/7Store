@@ -11,18 +11,15 @@ import {
   HiArrowRightOnRectangle,
 } from "react-icons/hi2";
 
-// ✅ Import logo dari folder src/assets/images/
-import logo7store from "../assets/images/logo7store.png"; // pastikan file ada di src/assets/images/
-
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [cartItems, setCartItems] = useState(2);
+  const [cartItems] = useState(2);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Scroll detection
+  // Efek scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
@@ -56,22 +53,23 @@ export default function Navbar() {
       >
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo + Brand */}
+            {/* ✅ Logo & Brand */}
             <div
               onClick={() => navigate("/")}
-              className="flex items-center space-x-3 cursor-pointer select-none"
+              className="flex items-center space-x-3 cursor-pointer select-none hover:scale-105 transition-transform"
             >
+              {/* ✅ gunakan src tanpa 'public/' */}
               <img
-                src={logo7store} // ✅ otomatis resolve dari import
+                src="/assets/images/logo7store.png"
                 alt="7Store Logo"
-                className="w-30 h-14 rounded-lg object-cover shadow-lg"
+                className="w-14 h-14 rounded-lg object-cover shadow-md"
               />
               <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 drop-shadow-md">
                 7Store
               </h1>
             </div>
 
-            {/* Desktop Menu */}
+            {/* ✅ Desktop Menu */}
             <nav className="hidden md:flex items-center space-x-2">
               {navItems.map((item) => (
                 <Link
@@ -83,13 +81,13 @@ export default function Navbar() {
                       : "text-slate-300 hover:bg-slate-800 hover:text-white"
                   }`}
                 >
-                  <span>{item.icon}</span>
+                  {item.icon}
                   <span>{item.label}</span>
                 </Link>
               ))}
             </nav>
 
-            {/* Right side */}
+            {/* ✅ Right Section */}
             <div className="hidden md:flex items-center space-x-3">
               {/* Cart */}
               <button className="relative p-2 rounded-lg hover:bg-slate-800 transition-colors">
@@ -118,8 +116,9 @@ export default function Navbar() {
                   </div>
                 </button>
 
+                {/* Dropdown Profile */}
                 {isProfileMenuOpen && (
-                  <div className="absolute right-0 mt-3 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden">
+                  <div className="absolute right-0 mt-3 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-fadeIn">
                     <div className="px-4 py-3 border-b border-slate-700">
                       <p className="text-white font-medium">User123</p>
                       <p className="text-slate-400 text-sm">user@email.com</p>
@@ -143,7 +142,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Mobile toggle */}
+            {/* ✅ Mobile Menu Toggle */}
             <div className="flex md:hidden items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -169,7 +168,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* ✅ Mobile Menu */}
         <div
           className={`md:hidden transition-all duration-300 overflow-hidden ${
             isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
@@ -199,7 +198,7 @@ export default function Navbar() {
       {/* Spacer */}
       <div className="h-16"></div>
 
-      {/* Overlay */}
+      {/* ✅ Overlay */}
       {(isMobileMenuOpen || isProfileMenuOpen) && (
         <div
           className="fixed inset-0 bg-black/40 z-30 md:hidden"
