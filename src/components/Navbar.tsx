@@ -10,6 +10,7 @@ import {
   HiCog6Tooth,
   HiArrowRightOnRectangle,
 } from "react-icons/hi2";
+import { useAuth } from "../context/AuthContext"; // 🔗 import context
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,6 +19,7 @@ export default function Navbar() {
   const [cartItems] = useState(2);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth(); // 🟢 ambil user dan logout dari context
 
   // Efek scroll
   useEffect(() => {
@@ -58,13 +60,11 @@ export default function Navbar() {
               onClick={() => navigate("/")}
               className="flex items-center space-x-3 cursor-pointer select-none hover:scale-105 transition-transform"
             >
-              {/* ✅ gunakan src tanpa 'public/' */}
-             <img
-  src="/assets/images/logo7store.png"
-  alt="7Store Logo"
-  className="w-16 h-16 object-contain p-1 rounded-lg bg-slate-800 shadow-md"
-/>
-
+              <img
+                src="/assets/images/logo7store.png"
+                alt="7Store Logo"
+                className="w-16 h-16 object-contain p-1 rounded-lg bg-slate-800 shadow-md"
+              />
               <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 drop-shadow-md">
                 7Store
               </h1>
@@ -106,41 +106,42 @@ export default function Navbar() {
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full"></span>
               </button>
 
-              {/* Profile */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-800 transition-colors"
-                >
-                  <div className="w-9 h-9 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center text-slate-900 font-bold">
-                    U
-                  </div>
-                </button>
-
-                {/* Dropdown Profile */}
-                {isProfileMenuOpen && (
-                  <div className="absolute right-0 mt-3 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-fadeIn">
-                    <div className="px-4 py-3 border-b border-slate-700">
-                      <p className="text-white font-medium">User123</p>
-                      <p className="text-slate-400 text-sm">user@email.com</p>
+              {/* ✅ Kondisi: Jika sudah login → tampil profile + logout */}
+              {user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+                  >
+                    <div className="w-9 h-9 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center text-slate-900 font-bold">
+                      {user.username.charAt(0).toUpperCase()}
                     </div>
-                    <button className="w-full flex items-center space-x-2 px-4 py-2 text-slate-300 hover:bg-slate-700 transition-colors">
-                      <HiUserCircle size={18} />
-                      <span>My Profile</span>
-                    </button>
-                    <button className="w-full flex items-center space-x-2 px-4 py-2 text-slate-300 hover:bg-slate-700 transition-colors">
-                      <HiCog6Tooth size={18} />
-                      <span>Settings</span>
-                    </button>
-                    <div className="border-t border-slate-700">
-                      <button className="w-full flex items-center space-x-2 px-4 py-2 text-red-400 hover:bg-slate-700 transition-colors">
+                  </button>
+
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 mt-3 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-fadeIn">
+                      <div className="px-4 py-3 border-b border-slate-700">
+                        <p className="text-white font-medium">{user.username}</p>
+                      </div>
+                      <button
+                        onClick={logout}
+                        className="w-full flex items-center space-x-2 px-4 py-2 text-red-400 hover:bg-slate-700 transition-colors"
+                      >
                         <HiArrowRightOnRectangle size={18} />
                         <span>Logout</span>
                       </button>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              ) : (
+                // ✅ Jika belum login → tampil tombol Register
+                <button
+                  onClick={() => navigate("/register")}
+                  className="bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-900 font-semibold px-4 py-2 rounded-lg hover:scale-105 transition-transform shadow-md"
+                >
+                  Register
+                </button>
+              )}
             </div>
 
             {/* ✅ Mobile Menu Toggle */}
@@ -192,6 +193,26 @@ export default function Navbar() {
                 </Link>
               ))}
             </nav>
+
+            {/* ✅ Kondisi mobile: Login/Register atau Logout */}
+            <div className="border-t border-slate-700 pt-3">
+              {user ? (
+                <button
+                  onClick={logout}
+                  className="w-full flex items-center space-x-2 px-4 py-3 text-red-400 hover:bg-slate-700 rounded-lg"
+                >
+                  <HiArrowRightOnRectangle size={18} />
+                  <span>Logout</span>
+                </button>
+              ) : (
+                <Link
+                  to="/register"
+                  className="block text-center bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-900 font-semibold py-2 rounded-lg hover:scale-105 transition-transform"
+                >
+                  Register
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </header>
