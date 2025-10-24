@@ -11,6 +11,7 @@ import EditProfile from "./pages/EditProfile";
 import Cart from "./pages/Cart";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { CartProvider } from "./context/CartContext";
+import SearchResult from "./pages/SearchResult";
 
 export default function App() {
   return (
@@ -43,6 +44,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Games />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoute>
+                <SearchResult />
               </ProtectedRoute>
             }
           />

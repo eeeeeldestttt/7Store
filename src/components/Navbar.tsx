@@ -1,24 +1,21 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
-  HiHome,
-  HiSquares2X2,
   HiShoppingCart,
-  HiQuestionMarkCircle,
   HiBell,
   HiUserCircle,
   HiArrowRightOnRectangle,
+  HiMagnifyingGlass,
 } from "react-icons/hi2";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { cart, removeFromCart } = useCart();
@@ -30,22 +27,13 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Tutup semua dropdown saat pindah halaman
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setIsProfileMenuOpen(false);
-    setIsCartOpen(false);
-  }, [location]);
-
-  const navItems = [
-    { path: "/", label: "Home", icon: <HiHome size={18} /> },
-    { path: "/games", label: "Games", icon: <HiSquares2X2 size={18} /> },
-    { path: "/orders", label: "Orders", icon: <HiShoppingCart size={18} /> },
-    { path: "/help", label: "Help", icon: <HiQuestionMarkCircle size={18} /> },
-  ];
-
-  const isActive = (path: string) =>
-    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <>
@@ -66,34 +54,31 @@ export default function Navbar() {
               <img
                 src="/assets/images/logo7store.png"
                 alt="7Store Logo"
-                className="w-16 h-16 object-contain p-1 rounded-lg bg-slate-800 shadow-md"
+                className="w-14 h-14 object-contain p-1 rounded-lg bg-slate-800 shadow-md"
               />
               <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 drop-shadow-md">
                 7Store
               </h1>
             </div>
 
-            {/* ✅ Desktop Menu */}
-            <nav className="hidden md:flex items-center space-x-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                    isActive(item.path)
-                      ? "bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-900 font-semibold shadow-lg"
-                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
+            {/* 🔍 Search Bar */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex items-center bg-slate-800 rounded-lg px-3 py-1.5 w-64 focus-within:ring-2 focus-within:ring-yellow-400 transition-all"
+            >
+              <HiMagnifyingGlass className="text-slate-400 mr-2" size={18} />
+              <input
+                type="text"
+                placeholder="Cari game atau topup..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent flex-1 text-sm text-slate-100 outline-none placeholder-slate-500"
+              />
+            </form>
 
             {/* ✅ Right Section */}
-            <div className="hidden md:flex items-center space-x-3 relative">
-              {/* 🛒 Cart Preview */}
+            <div className="flex items-center space-x-3 relative">
+              {/* 🛒 Cart Button */}
               <button
                 className="relative p-2 rounded-lg hover:bg-slate-800 transition-colors"
                 onClick={() => {
@@ -109,9 +94,9 @@ export default function Navbar() {
                 )}
               </button>
 
-              {/* 🔽 Dropdown Preview Cart */}
+              {/* 🔽 Dropdown Cart */}
               {isCartOpen && (
-                <div className="absolute right-20 mt-2 w-80 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                <div className="absolute right-0 top-full mt-3 w-80 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden animate-fadeIn">
                   <div className="max-h-64 overflow-y-auto">
                     {cart.length > 0 ? (
                       cart.slice(0, 3).map((item) => (
@@ -223,47 +208,11 @@ export default function Navbar() {
                 </button>
               )}
             </div>
-
-            {/* ☰ Mobile Menu Toggle */}
-            <div className="flex md:hidden items-center">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-lg hover:bg-slate-800 transition-all"
-              >
-                <div
-                  className={`w-6 h-0.5 bg-white mb-1.5 transition-all ${
-                    isMobileMenuOpen ? "rotate-45 translate-y-2" : ""
-                  }`}
-                ></div>
-                <div
-                  className={`w-6 h-0.5 bg-white mb-1.5 transition-all ${
-                    isMobileMenuOpen ? "opacity-0" : ""
-                  }`}
-                ></div>
-                <div
-                  className={`w-6 h-0.5 bg-white transition-all ${
-                    isMobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
-                  }`}
-                ></div>
-              </button>
-            </div>
           </div>
         </div>
       </header>
 
       <div className="h-16"></div>
-
-      {/* Overlay close area */}
-      {(isMobileMenuOpen || isProfileMenuOpen || isCartOpen) && (
-        <div
-          className="fixed inset-0 bg-black/40 z-30 md:hidden"
-          onClick={() => {
-            setIsMobileMenuOpen(false);
-            setIsProfileMenuOpen(false);
-            setIsCartOpen(false);
-          }}
-        ></div>
-      )}
     </>
   );
 }

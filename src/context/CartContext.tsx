@@ -19,15 +19,24 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  // ✅ Ambil dari localStorage saat pertama kali load
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const stored = localStorage.getItem("cart");
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error("Gagal parsing cart dari localStorage:", error);
+      return [];
+    }
+  });
 
+  // ✅ Simpan ke localStorage setiap kali cart berubah
   useEffect(() => {
-    const stored = localStorage.getItem("cart");
-    if (stored) setCart(JSON.parse(stored));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    try {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    } catch (error) {
+      console.error("Gagal menyimpan cart ke localStorage:", error);
+    }
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
@@ -35,7 +44,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existing = prev.find((p) => p.id === item.id);
       if (existing) {
         return prev.map((p) =>
-          p.id === item.id ? { ...p, quantity: p.quantity + item.quantity } : p
+          p.id === item.id
+            ? { ...p, quantity: p.quantity + item.quantity }
+            : p
         );
       }
       return [...prev, item];
@@ -47,7 +58,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const updateQuantity = (id: string, quantity: number) =>
     setCart((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      )
     );
 
   const clearCart = () => setCart([]);
@@ -63,6 +76,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCart harus di dalam CartProvider");
+  if (!context)
+    throw new Error("useCart harus digunakan di dalam CartProvider");
   return context;
 }

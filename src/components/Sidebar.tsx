@@ -11,21 +11,23 @@ import {
   HiChevronLeft,
   HiUserCircle,
 } from "react-icons/hi2";
+import { useAuth } from "../context/AuthContext"; // ✅ import Auth context
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const { user } = useAuth(); // ✅ ambil data user dari context
 
   const menuItems = [
     { id: "home", label: "Home", icon: <HiHome />, path: "/" },
     { id: "games", label: "Games", icon: <HiSquares2X2 />, path: "/games" },
-    { id: "orders", label: "Orders", icon: <HiShoppingCart />, path: "/orders" },
+    { id: "carts", label: "Cart", icon: <HiShoppingCart />, path: "/cart" },
     { id: "wallet", label: "Wallet", icon: <HiWallet />, path: "/wallet" },
     { id: "settings", label: "Settings", icon: <HiCog6Tooth />, path: "/settings" },
   ];
 
-  // ✅ Perbaikan logika active state
+  // ✅ Cek path aktif
   const isActive = (path: string) => {
     if (path === "/") return location.pathname === "/";
     return location.pathname.startsWith(path);
@@ -88,17 +90,42 @@ export default function Sidebar() {
               </nav>
             </div>
 
-            {/* User Info */}
+            {/* 👤 User Info (bisa dari context Auth) */}
             <div className="p-4 border-t border-slate-800 bg-slate-900/80">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
-                  <HiUserCircle size={28} />
+              {user ? (
+                <div
+                  onClick={() => navigate("/profile")}
+                  className="flex items-center space-x-3 cursor-pointer hover:bg-slate-800 p-2 rounded-lg transition"
+                >
+                  {user.photo ? (
+                    <img
+                      src={user.photo}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full object-cover border-2 border-indigo-500 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-slate-900 font-bold">
+                      {user.username?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium text-white">
+                      {user.username || "User"}
+                    </p>
+                    <p className="text-sm text-slate-400">
+                      {user.bio || "Member"}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-white">User123</p>
-                  <p className="text-sm text-slate-400">Premium</p>
-                </div>
-              </div>
+              ) : (
+                <button
+                  onClick={() => navigate("/login")}
+                  className="w-full flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-medium transition"
+                >
+                  <HiUserCircle size={20} />
+                  <span>Login</span>
+                </button>
+              )}
             </div>
           </motion.aside>
         )}
