@@ -7,19 +7,21 @@ import {
   HiQuestionMarkCircle,
   HiBell,
   HiUserCircle,
-  HiCog6Tooth,
   HiArrowRightOnRectangle,
 } from "react-icons/hi2";
-import { useAuth } from "../context/AuthContext"; // 🔗 import context
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [cartItems] = useState(2);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // 🟢 ambil user dan logout dari context
+  const { user, logout } = useAuth();
+  const { cart, removeFromCart } = useCart();
 
   // Efek scroll
   useEffect(() => {
@@ -28,10 +30,11 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Tutup menu saat pindah halaman
+  // Tutup semua dropdown saat pindah halaman
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsProfileMenuOpen(false);
+    setIsCartOpen(false);
   }, [location]);
 
   const navItems = [
@@ -55,7 +58,7 @@ export default function Navbar() {
       >
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* ✅ Logo & Brand */}
+            {/* ✅ Logo */}
             <div
               onClick={() => navigate("/")}
               className="flex items-center space-x-3 cursor-pointer select-none hover:scale-105 transition-transform"
@@ -89,40 +92,118 @@ export default function Navbar() {
             </nav>
 
             {/* ✅ Right Section */}
-            <div className="hidden md:flex items-center space-x-3">
-              {/* Cart */}
-              <button className="relative p-2 rounded-lg hover:bg-slate-800 transition-colors">
+            <div className="hidden md:flex items-center space-x-3 relative">
+              {/* 🛒 Cart Preview */}
+              <button
+                className="relative p-2 rounded-lg hover:bg-slate-800 transition-colors"
+                onClick={() => {
+                  setIsCartOpen(!isCartOpen);
+                  setIsProfileMenuOpen(false);
+                }}
+              >
                 <HiShoppingCart size={22} className="text-slate-200" />
-                {cartItems > 0 && (
+                {cart.length > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-black text-xs rounded-full flex items-center justify-center font-bold">
-                    {cartItems}
+                    {cart.length}
                   </span>
                 )}
               </button>
 
-              {/* Notification */}
+              {/* 🔽 Dropdown Preview Cart */}
+              {isCartOpen && (
+                <div className="absolute right-20 mt-2 w-80 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                  <div className="max-h-64 overflow-y-auto">
+                    {cart.length > 0 ? (
+                      cart.slice(0, 3).map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center gap-3 px-3 py-2 border-b border-slate-700 hover:bg-slate-700 transition-all"
+                        >
+                          <img
+                            src={item.image || "/assets/images/default-item.png"}
+                            alt={item.name}
+                            className="w-12 h-12 rounded-lg object-cover"
+                          />
+                          <div className="flex-1">
+                            <p className="text-slate-100 font-medium text-sm">
+                              {item.name}
+                            </p>
+                            <p className="text-yellow-400 text-xs">
+                              {item.quantity}x Rp{item.price.toLocaleString()}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-red-400 text-xs hover:text-red-500"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-slate-400 py-4 text-sm">
+                        Keranjang masih kosong
+                      </div>
+                    )}
+                  </div>
+                  {cart.length > 3 && (
+                    <p className="text-center text-slate-400 text-xs py-1">
+                      dan {cart.length - 3} item lainnya...
+                    </p>
+                  )}
+                  <button
+                    onClick={() => navigate("/cart")}
+                    className="w-full bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-900 font-semibold py-2 hover:opacity-90 transition-opacity"
+                  >
+                    Lihat Selengkapnya
+                  </button>
+                </div>
+              )}
+
+              {/* 🔔 Notification */}
               <button className="relative p-2 rounded-lg hover:bg-slate-800 transition-colors">
                 <HiBell size={22} className="text-slate-200" />
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full"></span>
               </button>
 
-              {/* ✅ Kondisi: Jika sudah login → tampil profile + logout */}
+              {/* 👤 Profile */}
               {user ? (
                 <div className="relative">
                   <button
-                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+                    onClick={() => {
+                      setIsProfileMenuOpen(!isProfileMenuOpen);
+                      setIsCartOpen(false);
+                    }}
+                    className="flex items-center space-x-2 p-1 rounded-lg hover:bg-slate-800 transition-colors"
                   >
-                    <div className="w-9 h-9 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center text-slate-900 font-bold">
-                      {user.username.charAt(0).toUpperCase()}
-                    </div>
+                    {user.photo ? (
+                      <img
+                        src={user.photo}
+                        alt="Profile"
+                        className="w-9 h-9 rounded-full object-cover border-2 border-yellow-500 shadow-sm"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center text-slate-900 font-bold">
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </button>
 
                   {isProfileMenuOpen && (
                     <div className="absolute right-0 mt-3 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-fadeIn">
-                      <div className="px-4 py-3 border-b border-slate-700">
+                      <div className="px-4 py-3 border-b border-slate-700 text-center">
                         <p className="text-white font-medium">{user.username}</p>
+                        {user.bio && (
+                          <p className="text-slate-400 text-xs mt-1">{user.bio}</p>
+                        )}
                       </div>
+                      <button
+                        onClick={() => navigate("/profile")}
+                        className="w-full flex items-center space-x-2 px-4 py-2 text-slate-200 hover:bg-slate-700 transition-colors"
+                      >
+                        <HiUserCircle size={18} />
+                        <span>Profile</span>
+                      </button>
                       <button
                         onClick={logout}
                         className="w-full flex items-center space-x-2 px-4 py-2 text-red-400 hover:bg-slate-700 transition-colors"
@@ -134,7 +215,6 @@ export default function Navbar() {
                   )}
                 </div>
               ) : (
-                // ✅ Jika belum login → tampil tombol Register
                 <button
                   onClick={() => navigate("/register")}
                   className="bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-900 font-semibold px-4 py-2 rounded-lg hover:scale-105 transition-transform shadow-md"
@@ -144,7 +224,7 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* ✅ Mobile Menu Toggle */}
+            {/* ☰ Mobile Menu Toggle */}
             <div className="flex md:hidden items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -169,64 +249,18 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-
-        {/* ✅ Mobile Menu */}
-        <div
-          className={`md:hidden transition-all duration-300 overflow-hidden ${
-            isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="px-4 pb-4 border-t border-slate-700 bg-slate-900/95 backdrop-blur-lg">
-            <nav className="space-y-2 py-3">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                    isActive(item.path)
-                      ? "bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-900 font-semibold"
-                      : "text-slate-300 hover:bg-slate-700"
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* ✅ Kondisi mobile: Login/Register atau Logout */}
-            <div className="border-t border-slate-700 pt-3">
-              {user ? (
-                <button
-                  onClick={logout}
-                  className="w-full flex items-center space-x-2 px-4 py-3 text-red-400 hover:bg-slate-700 rounded-lg"
-                >
-                  <HiArrowRightOnRectangle size={18} />
-                  <span>Logout</span>
-                </button>
-              ) : (
-                <Link
-                  to="/register"
-                  className="block text-center bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-900 font-semibold py-2 rounded-lg hover:scale-105 transition-transform"
-                >
-                  Register
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
       </header>
 
-      {/* Spacer */}
       <div className="h-16"></div>
 
-      {/* ✅ Overlay */}
-      {(isMobileMenuOpen || isProfileMenuOpen) && (
+      {/* Overlay close area */}
+      {(isMobileMenuOpen || isProfileMenuOpen || isCartOpen) && (
         <div
           className="fixed inset-0 bg-black/40 z-30 md:hidden"
           onClick={() => {
             setIsMobileMenuOpen(false);
             setIsProfileMenuOpen(false);
+            setIsCartOpen(false);
           }}
         ></div>
       )}

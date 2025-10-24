@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 interface User {
   username: string;
   password: string;
+  photo?: string;
+  bio?: string;
 }
 
 interface AuthContextType {
@@ -11,6 +13,7 @@ interface AuthContextType {
   login: (username: string, password: string) => boolean;
   register: (username: string, password: string) => boolean;
   logout: () => void;
+  updateProfile: (updatedData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
 
-  // 🔁 Cek user login dari localStorage
+  // 🔁 Ambil data user yang login dari localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
@@ -27,9 +30,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // 🟢 Login
   const login = (username: string, password: string): boolean => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
     const foundUser = users.find(
-      (u: any) => u.username === username && u.password === password
+      (u) => u.username === username && u.password === password
     );
 
     if (foundUser) {
@@ -45,19 +48,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // 🟠 Register
   const register = (username: string, password: string): boolean => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
 
-    if (users.find((u: any) => u.username === username)) {
+    if (users.find((u) => u.username === username)) {
       alert("Username sudah terdaftar!");
       return false;
     }
 
-    const newUser = { username, password };
+    const newUser: User = { username, password, photo: "", bio: "" };
     users.push(newUser);
     localStorage.setItem("users", JSON.stringify(users));
     alert("Registrasi berhasil! Silakan login.");
     navigate("/login");
     return true;
+  };
+
+  // 🔵 Update Profile
+  const updateProfile = (updatedData: Partial<User>) => {
+    if (!user) return;
+
+    const updatedUser = { ...user, ...updatedData };
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+
+    // Update juga di daftar "users"
+    const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+    const updatedUsers = users.map((u) =>
+      u.username === user.username ? updatedUser : u
+    );
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    alert("Profil berhasil diperbarui!");
   };
 
   // 🔴 Logout
@@ -68,7 +89,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, login, register, logout, updateProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );
