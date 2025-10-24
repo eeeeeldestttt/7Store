@@ -1,15 +1,28 @@
 import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const navigate = useNavigate();
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      alert("Keranjang masih kosong!");
+      return;
+    }
+
+    navigate("/checkout", {
+      state: { cart, total },
+    });
+  };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 bg-slate-800 p-6 rounded-xl shadow-lg">
       <h1 className="text-2xl font-bold text-yellow-400 mb-6">Keranjang Saya</h1>
 
       {cart.length === 0 ? (
-        <p className="text-slate-400">Keranjang kamu kosong 😢</p>
+        <p className="text-slate-400 text-center py-10">Keranjang kamu kosong 😢</p>
       ) : (
         <>
           <div className="space-y-4">
@@ -19,7 +32,7 @@ export default function Cart() {
                 className="flex items-center justify-between bg-slate-700 p-3 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
-                  <img src={item.image} className="w-14 h-14 rounded" />
+                  <img src={item.image} className="w-14 h-14 rounded object-cover" />
                   <div>
                     <p className="text-white font-medium">{item.name}</p>
                     <p className="text-slate-400 text-sm">
@@ -52,12 +65,20 @@ export default function Cart() {
             <h2 className="text-xl font-semibold text-white">
               Total: Rp {total.toLocaleString()}
             </h2>
-            <button
-              onClick={clearCart}
-              className="bg-yellow-500 text-slate-900 font-semibold px-5 py-2 rounded-lg hover:bg-yellow-400"
-            >
-              Checkout Semua
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCheckout}
+                className="bg-yellow-500 text-slate-900 font-semibold px-5 py-2 rounded-lg hover:bg-yellow-400 transition"
+              >
+                Checkout Semua
+              </button>
+              <button
+                onClick={clearCart}
+                className="bg-red-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-red-400 transition"
+              >
+                Hapus Semua
+              </button>
+            </div>
           </div>
         </>
       )}

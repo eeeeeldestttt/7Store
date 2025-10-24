@@ -23,7 +23,7 @@ export default function Sidebar() {
     { id: "home", label: "Home", icon: <HiHome />, path: "/" },
     { id: "games", label: "Games", icon: <HiSquares2X2 />, path: "/games" },
     { id: "carts", label: "Cart", icon: <HiShoppingCart />, path: "/cart" },
-    { id: "wallet", label: "Wallet", icon: <HiWallet />, path: "/wallet" },
+    { id: "history", label: "History", icon: <HiWallet />, path: "/orders" },
     { id: "settings", label: "Settings", icon: <HiCog6Tooth />, path: "/settings" },
   ];
 

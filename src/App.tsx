@@ -12,6 +12,10 @@ import Cart from "./pages/Cart";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { CartProvider } from "./context/CartContext";
 import SearchResult from "./pages/SearchResult";
+import Help from "./pages/Help";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrdersPage from "./pages/OrdersPage";
+import Rewards from "./pages/Rewards";
 
 export default function App() {
   return (
@@ -55,7 +59,24 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/help"
+            element={
+              <ProtectedRoute>
+                <Help />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rewards"
+            element={
+              <ProtectedRoute>
+                <Rewards />
+              </ProtectedRoute>
+            }
+          />
 
+          {/* 🧾 Halaman Topup */}
           <Route
             path="/topup/:id"
             element={
@@ -65,6 +86,7 @@ export default function App() {
             }
           />
 
+          {/* 👤 Profil */}
           <Route
             path="/profile"
             element={
@@ -73,7 +95,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/edit-profile"
             element={
@@ -83,12 +104,32 @@ export default function App() {
             }
           />
 
-          {/* 🛒 Halaman Keranjang */}
+          {/* 🛒 Keranjang */}
           <Route
             path="/cart"
             element={
               <ProtectedRoute>
                 <Cart />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 💳 Checkout */}
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 📜 Riwayat Pesanan */}
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <OrdersPage />
               </ProtectedRoute>
             }
           />
