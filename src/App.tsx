@@ -16,6 +16,7 @@ import Help from "./pages/Help";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import Rewards from "./pages/Rewards";
+import Settings from "./pages/Settings"; // ✅ huruf besar
 
 export default function App() {
   return (
@@ -51,6 +52,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/search"
             element={
@@ -59,6 +61,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/help"
             element={
@@ -67,11 +70,21 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/rewards"
             element={
               <ProtectedRoute>
                 <Rewards />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings /> {/* ✅ huruf besar */}
               </ProtectedRoute>
             }
           />
@@ -95,6 +108,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/edit-profile"
             element={
