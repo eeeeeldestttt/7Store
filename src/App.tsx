@@ -16,7 +16,9 @@ import Help from "./pages/Help";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import Rewards from "./pages/Rewards";
-import Settings from "./pages/Settings"; // ✅ huruf besar
+import Settings from "./pages/Settings";
+import SettingsAccount from "./pages/settings/SettingsAccount";
+import SettingsSecurity from "./pages/settings/SettingsSecurity";
 
 export default function App() {
   return (
@@ -80,11 +82,28 @@ export default function App() {
             }
           />
 
+          {/* ⚙️ Settings dan sub-halamannya */}
           <Route
             path="/settings"
             element={
               <ProtectedRoute>
-                <Settings /> {/* ✅ huruf besar */}
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings/account"
+            element={
+              <ProtectedRoute>
+                <SettingsAccount />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings/security"
+            element={
+              <ProtectedRoute>
+                <SettingsSecurity />
               </ProtectedRoute>
             }
           />
@@ -108,7 +127,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/edit-profile"
             element={
