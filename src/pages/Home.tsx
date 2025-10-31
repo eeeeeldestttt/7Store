@@ -5,9 +5,11 @@ import { games } from "../data/games";
 import { topupItems } from "../data/topup";
 
 const promoImages = [
-  "/assets/images/promo1.png",
-  "/assets/images/promo2.png",
-  "/assets/images/promo3.png",
+  "/assets/images/promo1.jpg",
+  "/assets/images/promo2.jpg",
+  "/assets/images/promo3.jpg",
+  "/assets/images/promo4.jpg",
+
 ];
 
 // Animasi variants
