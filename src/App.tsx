@@ -17,8 +17,12 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import Rewards from "./pages/Rewards";
 import Settings from "./pages/Settings";
-import SettingsAccount from "./pages/settings/SettingsAccount";
-import SettingsSecurity from "./pages/settings/SettingsSecurity";
+
+// ⚙️ Sub-halaman Settings
+import SettingsAccount from "./pages/settings/Account";
+import SettingsSecurity from "./pages/settings/Security";
+import SettingsNotifications from "./pages/settings/Notifications";
+import SettingsAppearance from "./pages/settings/Appearance";
 
 export default function App() {
   return (
@@ -82,7 +86,7 @@ export default function App() {
             }
           />
 
-          {/* ⚙️ Settings dan sub-halamannya */}
+          {/* ⚙️ Settings dan Sub-halamannya */}
           <Route
             path="/settings"
             element={
@@ -104,6 +108,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <SettingsSecurity />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings/notifications"
+            element={
+              <ProtectedRoute>
+                <SettingsNotifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings/appearance"
+            element={
+              <ProtectedRoute>
+                <SettingsAppearance />
               </ProtectedRoute>
             }
           />
